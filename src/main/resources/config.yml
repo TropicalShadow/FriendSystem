@@ -1,0 +1,4 @@
+debug: false
+
+
+friendRequestNotificationPostition: BOSSBAR # BOSSBAR, ACTIONBAR, CHAT

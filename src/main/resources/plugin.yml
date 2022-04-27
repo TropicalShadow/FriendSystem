@@ -1,0 +1,9 @@
+name: "FriendSystem"
+main: me.tropicalshadow.friendsystem.FriendSystem
+version: @version@
+api-version: 1.17
+commands:
+  friends:
+    aliases: ["F"]
+    description: "Root command for this plugin"
+    usage: "/<command> [list|gui|add|remove|cancel|accept]..."
