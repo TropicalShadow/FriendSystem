@@ -10,16 +10,18 @@
 - [x] Friend requests
   - [x] Send & Receive
   - [x] Cancel & Approve
+  - [x] Decline
 - [ ] GUI
   - [ ] Friend List
   - [ ] Friend Managment
-- [ ] Notifications
+- [x] Notifications
+  - [x] Each message position configurable
   - [x] Friend Requests
     - [x] Receive
     - [x] Accepted
-  - [ ] Friend
-    - [ ] Join
-    - [ ] Leave
+  - [x] Friend
+    - [x] Join
+    - [x] Leave
 - [ ] Party System
   - [ ] Force Teleport on world change
 
@@ -27,7 +29,7 @@
 
 - ### Version 0.0.1
   
-  - Multi-language Configurable
+  - Multi-language Configurable and Position
   
   - Friend Request System
   

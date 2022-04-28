@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     kotlin("jvm") version "1.6.20"
     id("com.github.johnrengelman.shadow") version "7.1.2"
@@ -20,7 +18,6 @@ repositories {
 
 dependencies {
     implementation("org.reflections:reflections:0.10.2")
-    implementation("net.kyori:adventure-text-minimessage:4.10.1")
     implementation("de.themoep:inventorygui:1.5-SNAPSHOT")
     compileOnly("io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT")
 

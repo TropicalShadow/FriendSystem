@@ -6,7 +6,6 @@ import org.bukkit.OfflinePlayer
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import java.util.*
-import kotlin.collections.ArrayList
 
 data class ShadowPlayer(
     var uniqueId: UUID,
@@ -42,6 +41,10 @@ data class ShadowPlayer(
 
     fun getBukkitOfflinePlayer(): OfflinePlayer{
         return Bukkit.getOfflinePlayer(uniqueId)
+    }
+
+    fun getOnlineFriends(): List<Player>{
+        return friends.filter { Bukkit.getPlayer(it) != null }.map{Bukkit.getPlayer(it)!!}
     }
 
     fun getOfflineFriends(): List<OfflinePlayer>{

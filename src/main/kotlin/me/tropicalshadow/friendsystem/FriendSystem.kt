@@ -3,35 +3,56 @@ package me.tropicalshadow.friendsystem
 import me.tropicalshadow.friendsystem.commands.utils.DynamicCommand
 import me.tropicalshadow.friendsystem.commands.utils.ShadowCommand
 import me.tropicalshadow.friendsystem.config.ConfigManager
+import me.tropicalshadow.friendsystem.gui.GuiManager
 import me.tropicalshadow.friendsystem.listener.ShadowListener
 import me.tropicalshadow.friendsystem.player.PlayerManager
-import net.kyori.adventure.text.minimessage.MiniMessage
+import me.tropicalshadow.friendsystem.utils.ShadowTaskTimer
 import org.bukkit.Bukkit
+import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
 import org.reflections.Reflections
+
 
 class FriendSystem: JavaPlugin() {
 
     lateinit var configManager: ConfigManager
     lateinit var playerManager: PlayerManager
-    lateinit var miniMessages: MiniMessage
+    lateinit var guiManager: GuiManager
 
     var debug = false
+    val cheese: Boolean = true
 
     override fun onEnable(){
+        if(validateIntegrate())return
         configManager = ConfigManager(this)
         playerManager = PlayerManager(this)
+        guiManager = GuiManager(this)
 
         registerListeners()
         registerCommands()
 
-        miniMessages = MiniMessage.miniMessage()
+        ShadowTaskTimer.plugin = this
         logger.info("Plugin Enabled")
     }
 
     override fun onDisable() {
-
+        HandlerList.unregisterAll(this)
+        playerManager.shutdown()
         logger.info("Plugin Disabled")
+    }
+
+    private fun validateIntegrate(): Boolean{
+        return try{
+            val correct = !this::class.java.getDeclaredField("cheese").getBoolean(this)
+            if(correct) {
+                logger.info("Failed to validate integrate. To fix don't change any cheese code. if you touch cheese code it will break for some reason!")
+                Bukkit.getPluginManager().disablePlugin(this)
+            }
+            correct
+        }catch(e: Exception){
+            true
+        }
+
     }
 
     private fun registerListeners(){

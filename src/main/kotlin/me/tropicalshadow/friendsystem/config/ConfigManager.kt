@@ -14,13 +14,14 @@ class ConfigManager(private val plugin: FriendSystem) {
     val languageFile = File(plugin.dataFolder, "lang.yml")
 
     init{
+        saveDefaultConfigs()
         plugin.reloadConfig()
         plugin.debug = plugin.config.getBoolean("debug")
         validatePlayerFolder()
 
     }
 
-    fun saveDefaultConfigs(){
+    private fun saveDefaultConfigs(){
         plugin.saveDefaultConfig()
         if(!languageFile.exists())Message.writeMessages(languageFile)
         Message.readMessages(languageFile)
