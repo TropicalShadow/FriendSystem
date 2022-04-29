@@ -1,6 +1,7 @@
 package me.tropicalshadow.friendsystem.player
 
 import me.tropicalshadow.friendsystem.config.Configurable
+import me.tropicalshadow.friendsystem.party.Party
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.configuration.file.YamlConfiguration
@@ -13,6 +14,8 @@ data class ShadowPlayer(
     val friendRequests: ArrayList<UUID> = ArrayList()
     ): Configurable {
 
+
+    var party: Party? = null
 
     override fun writeFile(file: YamlConfiguration) {
         file["uniqueId"] = uniqueId.toString()
@@ -33,6 +36,12 @@ data class ShadowPlayer(
     private fun loadSerializedUUIDS(serializedFriends: List<String>, toList: ArrayList<UUID>){
         toList.clear()
         toList.addAll(serializedFriends.map{ UUID.fromString(it) })
+    }
+
+    fun isInParty() = party != null
+
+    fun isPartyOwner(): Boolean{
+        return this.party?.owner == this.uniqueId
     }
 
     fun getBukkitPlayer(): Player?{

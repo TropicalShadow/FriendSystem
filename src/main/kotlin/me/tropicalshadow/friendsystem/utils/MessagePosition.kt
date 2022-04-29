@@ -3,7 +3,9 @@ package me.tropicalshadow.friendsystem.utils
 enum class MessagePosition {
     BOSSBAR,
     ACTIONBAR,
-    CHAT;
+    CHAT,
+    NON,
+    ;
 
     companion object{
 

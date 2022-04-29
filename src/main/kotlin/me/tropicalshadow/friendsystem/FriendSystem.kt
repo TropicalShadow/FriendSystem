@@ -57,7 +57,7 @@ class FriendSystem: JavaPlugin() {
 
     private fun registerListeners(){
         val packageName = javaClass.`package`.name
-        for (clazz in Reflections("$packageName.listeners").getSubTypesOf(
+        for (clazz in Reflections("$packageName.listener").getSubTypesOf(
             ShadowListener::class.java
         )){
             try{
@@ -98,8 +98,10 @@ class FriendSystem: JavaPlugin() {
                 command.tabCompleter = cmd
                 if (cmd.getCommandInfo().permission.isEmpty()) command.permission = null else command.permission =
                     cmd.getCommandInfo().permission
-                command.description = cmd.getCommandInfo().description
-                command.usage = cmd.getCommandInfo().usage
+                if(cmd.getCommandInfo().description.isNotBlank())
+                    command.description = cmd.getCommandInfo().description
+                if( cmd.getCommandInfo().usage != "/<command>")
+                    command.usage = cmd.getCommandInfo().usage
                 command.aliases = cmd.aliases
             } catch (e: Exception) {
                 e.printStackTrace()

@@ -1,16 +1,51 @@
 package me.tropicalshadow.friendsystem.utils
 
+import de.themoep.inventorygui.InventoryGui
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.ComponentLike
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import java.io.File
 
 enum class Message(val configLocation: String,val defaultDisplayName: String,val notificationPositional: MessagePosition = MessagePosition.CHAT) {
     DEFAULT("default", "Default"),
+
+    // Party Messages
+    PARTY_INVITE_SENT("party.invite_sent", "<green>You sent an invite to %other%", MessagePosition.ACTIONBAR),
+    PARTY_INVITE_RECEIVED("party.invite_received", "<green>You received a party invite from %other%", MessagePosition.ACTIONBAR),
+    PARTY_INVITE_FAILED_TO_SEND("party.invite_failed_to_send", "<red>Party invite failed to send", MessagePosition.CHAT),
+    PARTY_DISBANDED("party.disbanded", "<red>Party was disbanded",MessagePosition.ACTIONBAR),
+    PARTY_TRANSFERED("party.transfered", "<blue>Party was transfered from %from% to %to%",MessagePosition.ACTIONBAR),
+    PARTY_MEMBER_LEFT("party.left_member", "<red>%other% left the party.",MessagePosition.ACTIONBAR),
+    PARTY_NOT_OWNER("party.not_owner", "<red>You are not owner of the current party",MessagePosition.ACTIONBAR),
+    PARTY_NOT_IN_PARTY("party.not_in_party", "<red>You are not currently in a party",MessagePosition.ACTIONBAR),
+    PARTY_SUCCESSFULLY_DISBANDED("party.successfully_disbanded","<green>Successfully disbanded party",MessagePosition.ACTIONBAR),
+    PARTY_INVITE_EXPIRE("party.invite_expired","<red>party invite from %other% expired",MessagePosition.ACTIONBAR),
+    PARTY_UNKNOWN_INVITE("party.unknown_invite", "<red>Unknown party invite", MessagePosition.CHAT),
+    PARTY_NOT_INVITED("party.not_invited","<red>You was not invited into this party", MessagePosition.CHAT),
+    PARTY_JOINED("party.joined", "<green>You joined a party",MessagePosition.CHAT),
+    PARTY_ALREADY_IN_PARTY("party.already_in_party", "<red>You are already in a party",MessagePosition.CHAT),
+    PARTY_DECLINED("party.declined","<green>Declined party invite",MessagePosition.CHAT),
+    PARTY_CREATED("party.created", "<green>Created a new party", MessagePosition.CHAT),
+
+    // GUI Messages
+    GUI_FORCE_QUIT("gui.force_quit", "<red>Force Quit", MessagePosition.NON),
+    GUI_BACK_EXIT("gui.back_exit", "<red>Back / Exit", MessagePosition.NON),
+    GUI_GO_TO_FIRST("gui.go_to_first", "<white>Go to first page (current: %page%)", MessagePosition.NON),
+    GUI_GO_TO_LAST("gui.go_to_last","<white>Go to last page (%pages%)",MessagePosition.NON),
+    GUI_GO_TO_PREVIOUS("gui.go_to_previous", "<white>Go to previous (page %prevpage%)", MessagePosition.NON),
+    GUI_GO_TO_NEXT("gui.go_to_next", "<white>Go to next (page %nextpage%)", MessagePosition.NON),
+    GUI_NO_FRIEND_FILLER("gui.no_friend_filler", "<red>No More Friends", MessagePosition.NON),
+    GUI_TITLE_FRIENDS_LIST("gui.title.friends_list", "Friends List", MessagePosition.NON),
+    GUI_ITEM_TITLE_FRIENDS_LIST("gui.item.friends_list_title", "%title%", MessagePosition.NON),
+    GUI_TITLE_FRIEND_MANAGER("gui.title.friend_manager", "%friend% Manager", MessagePosition.NON),
+    GUI_ITEM_TITLE_FRIEND_MANAGER("gui.item.friend_manager_title", "%title%", MessagePosition.NON),
+    GUI_REMOVE_FRIEND("gui.remove_friend", "<red>Remove Friend", MessagePosition.NON),
+    GUI_INVITE_PARTY("gui.invite_party", "Invite to party", MessagePosition.NON),
 
     //Friend Join / Leave
     FRIEND_JOINED("friend.joined", "<green>%other% has joined the game"),
@@ -44,15 +79,22 @@ enum class Message(val configLocation: String,val defaultDisplayName: String,val
 
     // FRIEND REQUEST COMMAND MESSAGES
 
-    UNKNOWN_PLAYER_GIVEN("command.unknown_player", "<red>Unknown player given.")
+    UNKNOWN_PLAYER_GIVEN("command.unknown_player", "<red>Unknown player given."),
+    CAN_NOT_ADD_YOURSELF("command.can_not_add_yourself", "<red>You can't send yourself a friend request"),
 
     ;
 
-    fun getComponent(player: CommandSender,vararg placeholders: Pair<String, String>): ComponentLike{
+    fun getDisplayContent(player: CommandSender, vararg placeholders: Pair<String, String>, gui: InventoryGui? = null): String{
         var message = messages["${this.configLocation}.text"]?: this.defaultDisplayName
         placeholders.forEach { message = message.replace(it.first,it.second) }
+        if(player is HumanEntity && gui != null)
+            message = gui.replaceVars(player, message)
         message = message.replace("%player%", player.name)
-        return messageDeserializer(message)
+        return message
+    }
+
+    fun getComponent(player: CommandSender,vararg placeholders: Pair<String, String>, gui: InventoryGui? = null): Component{
+        return messageDeserializer(getDisplayContent(player, *placeholders, gui =gui))
     }
 
     fun send(player: Player, vararg placeholders: Pair<String, String>){
@@ -61,6 +103,7 @@ enum class Message(val configLocation: String,val defaultDisplayName: String,val
             MessagePosition.CHAT -> sendMessage(player, *placeholders)
             MessagePosition.ACTIONBAR -> sendActionBar(player, *placeholders)
             MessagePosition.BOSSBAR -> sendBossBar(player, *placeholders)
+            else -> return
         }
 
     }
@@ -88,16 +131,14 @@ enum class Message(val configLocation: String,val defaultDisplayName: String,val
     companion object{
         val messages = HashMap<String, String>()
 
-        fun messageDeserializer(input: String): ComponentLike{
+        fun messageDeserializer(input: String): Component{
             var string = input
             val colourMap = HashMap<String, String>()
             ChatColor.values().forEach { colour ->
                 colourMap["<${colour.name.lowercase()}>"] = "&${colour.char}"
             }
             colourMap.forEach{ (colourSerialized, colourFormat) -> string = string.replace(colourSerialized, colourFormat)}
-            return Component.text(
-                ChatColor.translateAlternateColorCodes('&', string)
-            )
+            return Component.text(ChatColor.translateAlternateColorCodes('&', string)).decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
         }
 
         fun writeMessages(file: File){
@@ -105,7 +146,7 @@ enum class Message(val configLocation: String,val defaultDisplayName: String,val
             values().forEach {
                 if(!config.isSet("${it.configLocation}.text"))
                     config["${it.configLocation}.text"] = it.defaultDisplayName
-                if(!config.isSet("${it.configLocation}.position"))
+                if(!config.isSet("${it.configLocation}.position") && it.notificationPositional != MessagePosition.NON)
                     config["${it.configLocation}.position"] = it.notificationPositional.name
             }
             config.save(file)
@@ -121,9 +162,10 @@ enum class Message(val configLocation: String,val defaultDisplayName: String,val
                 }else{
                     messages["${it.configLocation}.text"] = message
                 }
-
-                messages["${it.configLocation}.position"] = MessagePosition.getFromName(config.getString("${it.configLocation}.position",  it.notificationPositional.name)!!).name
-
+                if(it.notificationPositional != MessagePosition.NON)
+                    messages["${it.configLocation}.position"] = MessagePosition.getFromName(config.getString("${it.configLocation}.position",  it.notificationPositional.name)!!).name
+                else
+                    messages["${it.configLocation}.position"] = MessagePosition.NON.name
             }
             config.save(file)
         }

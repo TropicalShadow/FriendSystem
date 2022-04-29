@@ -13,7 +13,7 @@ import org.bukkit.entity.Player
 import java.util.*
 
 
-@ShadowCommandInfo("friend", isPlayerOnly = true)
+@ShadowCommandInfo("friend", isPlayerOnly = true, permission = "friendsystem.friend")
 @ShadowCommandAlias(["f","friends"])
 class FriendCommand(plugin: FriendSystem) : ShadowCommand(plugin) {
 // "/friend [list|gui|add|remove|cancel|accept|decline]..."
@@ -37,10 +37,10 @@ class FriendCommand(plugin: FriendSystem) : ShadowCommand(plugin) {
     }
 
     override fun execute(player: Player, args: Array<String>) {
-        if(args.isEmpty())return player.sendMessage(this.usage)
+        if(args.isEmpty())return player.sendMessage(plugin.getCommand("friend")!!.usage)
 
         when(args.first()){
-            "list", "gui" -> openGuiCommand(player, args.copyOfRange(1, args.size))//open friends list gui
+            "list", "gui" -> openGuiCommand(player)//open friends list gui
             "add" -> addFriendCommand(player, args.copyOfRange(1,args.size))
             "remove" -> removeFriendCommand(player, args.copyOfRange(1,args.size))
             "cancel" -> cancelFriendRequestCommand(player, args.copyOfRange(1,args.size))
@@ -55,7 +55,6 @@ class FriendCommand(plugin: FriendSystem) : ShadowCommand(plugin) {
     private val cheeseCounter = HashMap<UUID, Int>()
     private fun cheese(player: Player, args: Array<String>){
         cheeseCounter[player.uniqueId] = (cheeseCounter[player.uniqueId]?: 0) + 1
-        println(cheeseCounter[player.uniqueId])
         if((cheeseCounter[player.uniqueId] ?: 0) >= 15){
             if(args.isEmpty())return
             val otherPlayer = Bukkit.getPlayer(args.first())?: return
@@ -66,7 +65,7 @@ class FriendCommand(plugin: FriendSystem) : ShadowCommand(plugin) {
         }
     }
 
-    private fun openGuiCommand(player: Player, args: Array<String>){
+    private fun openGuiCommand(player: Player){
         plugin.guiManager.openFriendsListGui(player)
     }
 
@@ -116,9 +115,10 @@ class FriendCommand(plugin: FriendSystem) : ShadowCommand(plugin) {
     }
 
     private fun addFriendCommand(player: Player, args: Array<String>){
-        if(args.isEmpty())return Message.UNKNOWN_PLAYER_GIVEN.sendMessage(player)
+        if(args.isEmpty())return Message.UNKNOWN_PLAYER_GIVEN.send(player)
 
-        val offlinePlayer = Bukkit.getOfflinePlayerIfCached(args.first())?: return Message.UNKNOWN_PLAYER_GIVEN.sendMessage(player)
+        val offlinePlayer = Bukkit.getOfflinePlayerIfCached(args.first())?: return Message.UNKNOWN_PLAYER_GIVEN.send(player)
+        if(player.uniqueId == offlinePlayer.uniqueId)return Message.CAN_NOT_ADD_YOURSELF.send(player)
         val response = plugin.playerManager.sendFriendRequest(plugin.playerManager.getPlayer(player),offlinePlayer.uniqueId)
         response.message.sendMessage(player, Pair("%other%",offlinePlayer.name?:"Unknown"), Pair("%player%", player.name))
         val receiver = offlinePlayer.player?: return

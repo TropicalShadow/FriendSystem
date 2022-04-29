@@ -6,14 +6,22 @@
 
 - [x] Core
   - [x] Full Language Configurable
-  - [x] Store Playerdata to file
+  - [x] Store Player data to file
 - [x] Friend requests
   - [x] Send & Receive
   - [x] Cancel & Approve
   - [x] Decline
 - [ ] GUI
-  - [ ] Friend List
-  - [ ] Friend Managment
+  - [x] Friend List
+    - [x] All Friends
+    - [ ] Online Friends
+  - [ ] Friend Management
+    - [x] Remove Friend
+    - [ ] Party Invite
+  - [ ] Party Management
+    - [ ] view members
+    - [ ] kick member
+    - [ ] invite?
 - [x] Notifications
   - [x] Each message position configurable
   - [x] Friend Requests
@@ -24,6 +32,10 @@
     - [x] Leave
 - [ ] Party System
   - [ ] Force Teleport on world change
+  - [x] Create Party
+  - [x] Party Invite
+  - [ ] Party Chat?
+  - [ ] Commands
 
 ## Versions
 

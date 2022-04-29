@@ -7,3 +7,22 @@ commands:
     aliases: ["f","friends"]
     description: "Root command for this plugin"
     usage: "/<command> [list|gui|add|remove|cancel|accept]..."
+    permission: "friendsystem.friend"
+  party:
+    aliases: ["p"]
+    description: "Party root command"
+    usage: "/<command> [create|leave|join|accept|decline]"
+    permission: "friendsystem.party"
+  friendsystem:
+    description: "Friend system root command"
+    permission: "friendsystem.op"
+permissions:
+  friendsystem.op:
+    default: op
+    children:
+      - "friendsystem.friend"
+      - "friendsystem.party"
+  friendsystem.friend:
+    default: true
+  friendsystem.party:
+    default: true
