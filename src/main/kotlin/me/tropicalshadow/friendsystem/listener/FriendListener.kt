@@ -16,7 +16,7 @@ class FriendListener(plugin: FriendSystem) : ShadowListener(plugin) {
         if(friendsOnline.isEmpty())
             Message.NO_FRIENDS_ONLINE_JOIN_MESSAGE.send(event.player)
         else
-            Message.FRIENDS_ONLINE_JOIN_MESSAGE.send(event.player)
+            Message.FRIENDS_ONLINE_JOIN_MESSAGE.send(event.player, Pair("%friends%", friendsOnline.size.toString()))
 
         friendsOnline.forEach {
             Message.FRIEND_JOINED.send(it, Pair("%other%", event.player.name))

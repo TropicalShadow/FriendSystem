@@ -6,12 +6,12 @@ commands:
   friend:
     aliases: ["f","friends"]
     description: "Root command for this plugin"
-    usage: "/<command> [list|gui|add|remove|cancel|accept]..."
+    usage: "/<command> [list|gui|add|remove|cancel|accept|decline]..."
     permission: "friendsystem.friend"
   party:
     aliases: ["p"]
     description: "Party root command"
-    usage: "/<command> [create|leave|join|accept|decline]"
+    usage: "/<command> [gui|info|invite|create|accept|decline|leave|disband|kick]..."
     permission: "friendsystem.party"
   friendsystem:
     description: "Friend system root command"

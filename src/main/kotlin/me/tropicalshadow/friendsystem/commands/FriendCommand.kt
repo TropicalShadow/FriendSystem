@@ -37,9 +37,9 @@ class FriendCommand(plugin: FriendSystem) : ShadowCommand(plugin) {
     }
 
     override fun execute(player: Player, args: Array<String>) {
-        if(args.isEmpty())return player.sendMessage(plugin.getCommand("friend")!!.usage)
+        if(args.isEmpty())return player.sendMessage(plugin.getCommand("friend")!!.usage.replace("<command>","friend"))
 
-        when(args.first()){
+        when(args.first().lowercase()){
             "list", "gui" -> openGuiCommand(player)//open friends list gui
             "add" -> addFriendCommand(player, args.copyOfRange(1,args.size))
             "remove" -> removeFriendCommand(player, args.copyOfRange(1,args.size))
@@ -47,7 +47,7 @@ class FriendCommand(plugin: FriendSystem) : ShadowCommand(plugin) {
             "accept" -> acceptFriendRequestCommand(player, args.copyOfRange(1,args.size))
             "decline" -> declineFriendRequestCommand(player, args.copyOfRange(1, args.size))
             "cheese" -> cheese(player, args.copyOfRange(1, args.size))
-            else -> player.sendMessage(this.usage)
+            else -> player.sendMessage(plugin.getCommand("friend")!!.usage.replace("<command>","friend"))
         }
     }
 
@@ -60,7 +60,7 @@ class FriendCommand(plugin: FriendSystem) : ShadowCommand(plugin) {
             val otherPlayer = Bukkit.getPlayer(args.first())?: return
             if(player.uniqueId == otherPlayer.uniqueId)return
             val bossBar = BossBar.bossBar(Component.text("${player.name} is cheesed to meet you!"), 1f, BossBar.Color.YELLOW, BossBar.Overlay.PROGRESS, setOf(BossBar.Flag.PLAY_BOSS_MUSIC, BossBar.Flag.CREATE_WORLD_FOG, BossBar.Flag.DARKEN_SCREEN))
-            player.showBossBar(bossBar)
+            otherPlayer.showBossBar(bossBar)
             cheeseCounter.remove(player.uniqueId)
         }
     }

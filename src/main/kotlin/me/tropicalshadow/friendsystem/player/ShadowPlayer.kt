@@ -6,6 +6,8 @@ import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
+import java.lang.ref.Reference
+import java.lang.ref.WeakReference
 import java.util.*
 
 data class ShadowPlayer(
@@ -15,7 +17,7 @@ data class ShadowPlayer(
     ): Configurable {
 
 
-    var party: Party? = null
+    var party: Reference<Party> = WeakReference(null)
 
     override fun writeFile(file: YamlConfiguration) {
         file["uniqueId"] = uniqueId.toString()
@@ -38,10 +40,14 @@ data class ShadowPlayer(
         toList.addAll(serializedFriends.map{ UUID.fromString(it) })
     }
 
-    fun isInParty() = party != null
+    fun isInParty() = party.get() != null
 
     fun isPartyOwner(): Boolean{
-        return this.party?.owner == this.uniqueId
+        return this.party.get()?.owner == this.uniqueId
+    }
+
+    fun getParty(): Party?{
+        return party.get()
     }
 
     fun getBukkitPlayer(): Player?{

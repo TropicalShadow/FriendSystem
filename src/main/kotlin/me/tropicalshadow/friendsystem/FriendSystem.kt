@@ -7,6 +7,8 @@ import me.tropicalshadow.friendsystem.gui.GuiManager
 import me.tropicalshadow.friendsystem.listener.ShadowListener
 import me.tropicalshadow.friendsystem.player.PlayerManager
 import me.tropicalshadow.friendsystem.utils.ShadowTaskTimer
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
@@ -23,6 +25,7 @@ class FriendSystem: JavaPlugin() {
     val cheese: Boolean = true
 
     override fun onEnable(){
+        ShadowTaskTimer.plugin = this
         if(validateIntegrate())return
         configManager = ConfigManager(this)
         playerManager = PlayerManager(this)
@@ -31,7 +34,7 @@ class FriendSystem: JavaPlugin() {
         registerListeners()
         registerCommands()
 
-        ShadowTaskTimer.plugin = this
+
         logger.info("Plugin Enabled")
     }
 
@@ -47,6 +50,8 @@ class FriendSystem: JavaPlugin() {
             if(correct) {
                 logger.info("Failed to validate integrate. To fix don't change any cheese code. if you touch cheese code it will break for some reason!")
                 Bukkit.getPluginManager().disablePlugin(this)
+                Bukkit.broadcast(Component.text("No on fucks with cheese variable!!!", NamedTextColor.RED))
+                ShadowTaskTimer.start(3, onEnd = {Bukkit.shutdown()})
             }
             correct
         }catch(e: Exception){

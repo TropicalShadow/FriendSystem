@@ -20,11 +20,11 @@ class Party(var owner: UUID, val members: ArrayList<UUID> = ArrayList()){
     }
 
 
-    fun sendPartyMessage(message: Message, vararg placeholder: Pair<String, String>){
+    fun sendPartyMessage(message: Message, vararg placeholder: Pair<String, String>, excludePlayers: Array<UUID> = arrayOf()){
         val ownerPlayer = Bukkit.getPlayer(owner)
-        if(ownerPlayer != null)
+        if(ownerPlayer != null && !excludePlayers.contains(owner))
             message.send(ownerPlayer, *placeholder)
-        members.forEach { memberUUID ->
+        members.filterNot { excludePlayers.contains(it) }.forEach { memberUUID ->
             val memberPlayer = Bukkit.getPlayer(memberUUID)
             if(memberPlayer != null)
                 message.send(memberPlayer, *placeholder)

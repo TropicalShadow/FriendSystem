@@ -20,7 +20,7 @@ class JoinLeaveListener(plugin: FriendSystem) : ShadowListener(plugin) {
         plugin.configManager.loadPlayer(event.player)
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     fun onQuit(event: PlayerQuitEvent){
         plugin.configManager.savePlayerAndRemove(event.player.uniqueId)
     }
